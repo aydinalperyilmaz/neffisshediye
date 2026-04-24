@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Neffiss Hediye — Çiçekçi Paneli</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --pink:#E91E8C;--pink2:#F06292;--pink-light:#FCE4EC;--pink-dark:#C2185B;
+  --green:#22C55E;--red:#EF4444;--yellow:#F59E0B;--blue:#3B82F6;
+  --bg:#1A0A12;--surface:#2D1120;--surface2:#3D1530;--border:#5C2040;
+  --text:#F5E6EC;--sub:#C4899E;--radius:14px
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+.hdr{background:linear-gradient(135deg,var(--pink-dark),var(--pink));padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.hdr-logo{color:#fff;font-size:18px;font-weight:800}
+.hdr-logo span{font-size:12px;font-weight:400;opacity:.8;display:block}
+.hdr-right{display:flex;gap:8px;align-items:center}
+.hdr-btn{background:rgba(255,255,255,.2);border:none;border-radius:8px;padding:8px 14px;color:#fff;font-size:12px;font-weight:700;cursor:pointer}
+.open-toggle{padding:8px 16px;border-radius:20px;border:none;font-size:12px;font-weight:700;cursor:pointer}
+.open-toggle.open{background:var(--green);color:#fff}
+.open-toggle.closed{background:var(--red);color:#fff}
+
+/* TABS */
+.tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border)}
+.tab{flex:1;padding:14px;text-align:center;font-size:13px;font-weight:700;cursor:pointer;color:var(--sub);border-bottom:2px solid transparent;transition:all .2s;position:relative}
+.tab.on{color:var(--pink);border-bottom-color:var(--pink)}
+.tab-badge{position:absolute;top:8px;right:calc(50% - 22px);background:var(--red);color:#fff;border-radius:50%;width:18px;height:18px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+
+/* CONTENT */
+.content{padding:16px;max-width:900px;margin:0 auto;padding-bottom:40px}
+
+/* ORDERS */
+.order-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:12px;transition:border .2s}
+.order-card.new{border-color:var(--pink);box-shadow:0 0 12px rgba(233,30,140,.2)}
+.order-card.acil{border:2px solid #E74C3C;box-shadow:0 0 20px rgba(231,76,60,.4);animation:acilPulse 1.2s ease-in-out infinite}
+@keyframes acilPulse{0%,100%{box-shadow:0 0 20px rgba(231,76,60,.4)}50%{box-shadow:0 0 30px rgba(231,76,60,.7)}}
+.order-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.order-num{font-size:15px;font-weight:800;color:var(--text)}
+.order-time{font-size:11px;color:var(--sub);margin-top:2px}
+.status-badge{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;flex-shrink:0}
+.st-pending{background:rgba(245,158,11,.15);color:var(--yellow)}
+.st-confirmed{background:rgba(59,130,246,.15);color:var(--blue)}
+.st-preparing{background:rgba(139,92,246,.15);color:#A78BFA}
+.st-on_the_way{background:rgba(34,197,94,.15);color:var(--green)}
+.st-delivered{background:rgba(34,197,94,.15);color:var(--green)}
+.st-cancelled{background:rgba(239,68,68,.15);color:var(--red)}
+
+.order-body{font-size:13px;color:var(--sub);line-height:1.6;margin-bottom:12px}
+.order-customer{display:flex;gap:16px;padding:10px;background:var(--surface2);border-radius:10px;margin-bottom:10px;font-size:12px}
+.order-items{margin-bottom:10px}
+.order-item{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:13px}
+.order-item:last-child{border:none}
+.order-gift-note{background:rgba(233,30,140,.1);border:1px solid rgba(233,30,140,.3);border-radius:10px;padding:10px;margin:8px 0;font-size:12px;color:var(--pink2)}
+.order-actions{display:flex;gap:8px;flex-wrap:wrap}
+.act-btn{padding:8px 16px;border-radius:8px;border:none;font-size:12px;font-weight:700;cursor:pointer}
+.act-confirm{background:var(--blue);color:#fff}
+.act-prepare{background:#8B5CF6;color:#fff}
+.act-ready{background:var(--green);color:#fff}
+.act-cancel{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+
+/* MENU */
+.menu-item-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.mi-name{font-size:14px;font-weight:700}
+.mi-price{font-size:14px;font-weight:800;color:var(--pink)}
+.mi-available{width:14px;height:14px;border-radius:50%}
+.add-menu-form{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:16px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.inp{width:100%;padding:11px 14px;background:var(--surface2);border:1.5px solid var(--border);border-radius:10px;color:var(--text);font-size:13px;font-family:inherit;outline:none}
+.inp:focus{border-color:var(--pink)}
+.inp-full{grid-column:span 2}
+.btn-pink{padding:12px 24px;background:var(--pink);border:none;border-radius:10px;color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+.btn-sm{padding:8px 16px;font-size:12px}
+select.inp option{background:#2D1120}
+
+/* LOGIN */
+.login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+.login-box{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:32px;width:100%;max-width:380px}
+.login-title{font-size:22px;font-weight:800;margin-bottom:6px;color:var(--text);text-align:center}
+.login-sub{font-size:13px;color:var(--sub);text-align:center;margin-bottom:24px}
+.login-label{font-size:12px;font-weight:700;color:var(--sub);display:block;margin-bottom:4px}
+.login-err{color:var(--red);font-size:12px;margin-bottom:8px;display:none}
+
+/* STAT CARDS */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;text-align:center}
+.stat-val{font-size:22px;font-weight:800;color:var(--pink)}
+.stat-label{font-size:11px;color:var(--sub);margin-top:4px}
+
+/* NOTIF */
+.notif{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:50px;font-size:13px;font-weight:600;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+.notif.show{opacity:1}
+</style>
+</head>
+<body>
+
+<div id="appRoot"></div>
+<div class="notif" id="notif"></div>
+
+<script>
+const SB="https://fnfczglxcnqgrdiqfuig.supabase.co";
+const SK="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZuZmN6Z2x4Y25xZ3JkaXFmdWlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQzNzE1ODcsImV4cCI6MjA4OTk0NzU4N30.M8lfKoW6Rg32RSELlKqpymx_BQbGTcESBYB5i8BlcEM";
+let HD={apikey:SK,Authorization:"Bearer "+SK};
+
+async function sg(p){try{const r=await fetch(SB+"/rest/v1/"+p,{headers:HD});if(!r.ok)return null;return JSON.parse(await r.text())}catch{return null}}
+async function sRPC(fn,params){try{const r=await fetch(SB+"/rest/v1/rpc/"+fn,{method:"POST",headers:{...HD,"Content-Type":"application/json"},body:JSON.stringify(params)});if(!r.ok)return null;return JSON.parse(await r.text())}catch{return null}}
+async function sPatch(t,id,b){try{const r=await fetch(SB+"/rest/v1/"+t+"?id=eq."+id,{method:"PATCH",headers:{...HD,"Content-Type":"application/json",Prefer:"return=representation"},body:JSON.stringify(b)});if(!r.ok)return null;return JSON.parse(await r.text())}catch{return null}}
+async function sPost(t,b){try{const r=await fetch(SB+"/rest/v1/"+t,{method:"POST",headers:{...HD,"Content-Type":"application/json",Prefer:"return=representation"},body:JSON.stringify(b)});if(!r.ok)return null;return JSON.parse(await r.text())}catch{return null}}
+async function sDel(t,id){try{await fetch(SB+"/rest/v1/"+t+"?id=eq."+id,{method:"DELETE",headers:HD})}catch{}}
+
+function nf(msg){const el=document.getElementById("notif");el.textContent=msg;el.classList.add("show");setTimeout(()=>el.classList.remove("show"),2800)}
+
+// ═══ STATE ═══
+let panelUser=null;
+let currentRest=null;
+let orders=[];
+let menuItems=[];
+let activeTab="orders";
+let pollingInterval=null;
+let lastPendingCount=0;
+let userInteracted=false;
+let audioCtx=null;
+let _alarmAudio=null;
+let alarmInterval=null;
+let alarmDismissedIds=[];
+
+// ═══ SES SİSTEMİ ═══
+document.addEventListener("click",function(){
+  if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}
+  if(audioCtx&&audioCtx.state==="suspended"){audioCtx.resume().catch(()=>{});}
+  userInteracted=true;
+},{passive:true});
+document.addEventListener("touchstart",function(){
+  if(!audioCtx){try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();}catch(e){}}
+  if(audioCtx&&audioCtx.state==="suspended"){audioCtx.resume().catch(()=>{});}
+  userInteracted=true;
+},{passive:true});
+
+function flashScreen(){
+  try{document.body.style.transition="background .1s";document.body.style.background="#FEE2E2";setTimeout(()=>{document.body.style.background="";},300)}catch(e){}
+}
+
+function createAlarmAudio(){
+  const sr=44100,dur=1.5,len=Math.floor(sr*dur);
+  const buf=new ArrayBuffer(44+len*2);
+  const v=new DataView(buf);
+  const w=(p,s)=>{for(let i=0;i<s.length;i++)v.setUint8(p+i,s.charCodeAt(i))};
+  w(0,"RIFF");v.setUint32(4,36+len*2,true);w(8,"WAVE");w(12,"fmt ");
+  v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);
+  v.setUint32(24,sr,true);v.setUint32(28,sr*2,true);v.setUint16(32,2,true);
+  v.setUint16(34,16,true);w(36,"data");v.setUint32(40,len*2,true);
+  for(let i=0;i<len;i++){
+    const t=i/sr;
+    const freq=t%0.4<0.2?1100:880;
+    const val=Math.sin(2*Math.PI*freq*t)*1.0;
+    const fade=Math.min(1,Math.min(t*10,(dur-t)*10));
+    v.setInt16(44+i*2,val*fade*32767,true);
+  }
+  const blob=new Blob([buf],{type:"audio/wav"});
+  const audio=new Audio(URL.createObjectURL(blob));
+  audio.loop=false;audio.volume=1.0;
+  return audio;
+}
+
+function playDing(){
+  flashScreen();
+  if(_alarmAudio){try{_alarmAudio.currentTime=0;_alarmAudio.play().catch(()=>{});}catch(e){}}
+  try{
+    if(!audioCtx||audioCtx.state==="closed")audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==="suspended")audioCtx.resume();
+    if(audioCtx.state==="running"){
+      const play=(freq,start,dur)=>{
+        const osc=audioCtx.createOscillator(),gain=audioCtx.createGain();
+        osc.connect(gain);gain.connect(audioCtx.destination);
+        osc.type="square";osc.frequency.value=freq;
+        gain.gain.setValueAtTime(1.0,audioCtx.currentTime+start);
+        gain.gain.exponentialRampToValueAtTime(0.001,audioCtx.currentTime+start+dur);
+        osc.start(audioCtx.currentTime+start);osc.stop(audioCtx.currentTime+start+dur+0.05);
+      };
+      play(1100,0,0.35);play(880,0.4,0.35);play(1100,0.8,0.35);play(880,1.2,0.35);play(1320,1.6,0.5);
+    }
+  }catch(e){}
+}
+
+function showAudioBanner(){
+  if(document.getElementById("audioBanner"))return;
+  const b=document.createElement("div");
+  b.id="audioBanner";
+  b.style.cssText="position:fixed;bottom:0;left:0;right:0;background:#1E293B;padding:14px 16px;z-index:99999;display:flex;align-items:center;gap:12px;box-shadow:0 -4px 20px rgba(0,0,0,.3)";
+  b.innerHTML='<div style="font-size:28px">🔔</div><div style="flex:1"><div style="font-size:13px;font-weight:700;color:#fff">Sipariş bildirimi almak için sesi açın</div><div style="font-size:11px;color:#94A3B8;margin-top:2px">Yeni sipariş geldiğinde alarm çalacak</div></div><button id="audioBannerBtn" style="padding:10px 20px;border-radius:28px;border:none;background:#E91E8C;color:#fff;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap">🔊 AÇ</button>';
+  if(!document.getElementById("pulseCSS2")){const s=document.createElement("style");s.id="pulseCSS2";s.textContent="@keyframes pulse2{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}";document.head.appendChild(s);}
+  document.getElementById("audioBannerBtn").style.animation="pulse2 1.5s infinite";
+  document.body.appendChild(b);
+  document.getElementById("audioBannerBtn").addEventListener("click",function(){
+    try{audioCtx=new(window.AudioContext||window.webkitAudioContext)();audioCtx.resume();}catch(e){}
+    try{
+      _alarmAudio=createAlarmAudio();
+      _alarmAudio.volume=0.01;
+      _alarmAudio.play().then(()=>{_alarmAudio.pause();_alarmAudio.currentTime=0;_alarmAudio.volume=1.0;}).catch(()=>{});
+    }catch(e){}
+    setTimeout(()=>playDing(),200);
+    userInteracted=true;
+    localStorage.setItem("nefiss_hediye_audio","1");
+    nf("✅ Sesli bildirimler aktif!");
+    b.remove();
+  });
+}
+
+function notifyNewOrder(orderId,isAcil){
+  if(orderId&&alarmDismissedIds.includes(orderId))return;
+  flashScreen();
+  nf(isAcil?"⚡ ACİL SİPARİŞ GELDİ!":"🔔 YENİ SİPARİŞ GELDİ!");
+  if(alarmInterval)clearInterval(alarmInterval);
+  playDing();
+  // Acilde daha sık ses (1.5 sn), normalde 3 sn
+  alarmInterval=setInterval(()=>playDing(),isAcil?1500:3000);
+  if(!document.getElementById("alarmOverlay")){
+    const ov=document.createElement("div");
+    ov.id="alarmOverlay";
+    const bgGrad=isAcil?"linear-gradient(135deg,#991B1B,#E74C3C)":"linear-gradient(135deg,#C2185B,#E91E8C)";
+    ov.style.cssText="position:fixed;top:0;left:0;right:0;z-index:99998;background:"+bgGrad+";padding:20px 32px;display:flex;align-items:center;justify-content:space-between;cursor:pointer"+(isAcil?";animation:acilOverlayPulse 0.8s ease-in-out infinite":"");
+    const title=isAcil?"⚡ ACİL SİPARİŞ!":"🔔 YENİ SİPARİŞ GELDİ!";
+    const sub=isAcil?"2 SAAT İÇİNDE TESLİM — Tıklayın":"Tıklayın → Siparişler";
+    ov.innerHTML=`<div><div style="color:#fff;font-size:20px;font-weight:900">${title}</div><div style="color:rgba(255,255,255,.9);font-size:13px;margin-top:4px;font-weight:${isAcil?"800":"400"}">${sub}</div></div>
+      <button id="alarmCloseBtn" style="padding:12px 24px;border-radius:12px;border:2px solid rgba(255,255,255,.5);background:rgba(255,255,255,.15);color:#fff;font-size:15px;font-weight:800;cursor:pointer">✕ Kapat</button>`;
+    // Acil pulse animasyonu CSS'i inject et (bir kere)
+    if(isAcil&&!document.getElementById("acilPulseCss")){
+      const st=document.createElement("style");
+      st.id="acilPulseCss";
+      st.textContent="@keyframes acilOverlayPulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}";
+      document.head.appendChild(st);
+    }
+    document.body.appendChild(ov);
+    document.getElementById("alarmCloseBtn").addEventListener("click",function(e){e.stopPropagation();dismissAlarm();});
+    ov.addEventListener("click",function(){dismissAlarm();activeTab="orders";renderApp();});
+  }
+  if(Notification.permission==="granted"){try{new Notification(isAcil?"⚡ ACİL SİPARİŞ!":"🔔 YENİ SİPARİŞ!",{body:isAcil?"2 saat içinde teslim edilmeli!":"Hemen kontrol edin!",requireInteraction:true})}catch(e){}}
+  // Acilde daha uzun titreşim
+  try{navigator.vibrate(isAcil?[800,200,800,200,800,200,800]:[500,200,500,200,500])}catch(e){}
+}
+
+function dismissAlarm(){
+  if(alarmInterval){clearInterval(alarmInterval);alarmInterval=null;}
+  document.getElementById("alarmOverlay")?.remove();
+  orders.filter(o=>o.status==="pending").forEach(o=>{if(!alarmDismissedIds.includes(o.id))alarmDismissedIds.push(o.id);});
+}
+
+const STATUS_MAP={
+  pending:{l:"⏳ Bekliyor",c:"st-pending"},
+  confirmed:{l:"✅ Onaylandı",c:"st-confirmed"},
+  preparing:{l:"🌸 Hazırlanıyor",c:"st-preparing"},
+  sent_to_restaurant:{l:"📞 İletildi",c:"st-confirmed"},
+  restaurant_preparing:{l:"🌸 Hazırlanıyor",c:"st-preparing"},
+  ready_for_courier:{l:"🛵 Kuryede",c:"st-on_the_way"},
+  on_the_way:{l:"🚴 Yolda",c:"st-on_the_way"},
+  delivered:{l:"✅ Teslim",c:"st-delivered"},
+  cancelled:{l:"❌ İptal",c:"st-cancelled"}
+};
+
+// ═══ RENDER APP ═══
+function renderApp(){
+  if(!panelUser||!currentRest){renderLogin();return}
+  const pendingCount=orders.filter(o=>o.status==="pending").length;
+  document.getElementById("appRoot").innerHTML=`
+    <div class="hdr">
+      <div class="hdr-logo">
+        🌸 ${currentRest.name}
+        <span>Çiçekçi Paneli</span>
+      </div>
+      <div class="hdr-right">
+        <button class="open-toggle ${currentRest.is_open?'open':'closed'}" onclick="toggleOpen()">
+          ${currentRest.is_open?"🟢 Açık":"🔴 Kapalı"}
+        </button>
+        <button class="hdr-btn" onclick="doLogout()">Çıkış</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <div class="tab ${activeTab==="orders"?"on":""}" onclick="switchTab('orders')">
+        📦 Siparişler
+        ${pendingCount>0?`<span class="tab-badge">${pendingCount}</span>`:""}
+      </div>
+      <div class="tab ${activeTab==="menu"?"on":""}" onclick="switchTab('menu')">🌸 Menü</div>
+      <div class="tab ${activeTab==="stats"?"on":""}" onclick="switchTab('stats')">📊 Özet</div>
+    </div>
+
+    <div class="content" id="tabContent"></div>`;
+
+  renderTabContent();
+}
+
+function switchTab(tab){
+  activeTab=tab;
+  renderApp();
+}
+
+function renderTabContent(){
+  const el=document.getElementById("tabContent");
+  if(activeTab==="orders") el.innerHTML=renderOrders();
+  else if(activeTab==="menu") el.innerHTML=renderMenu();
+  else if(activeTab==="stats") el.innerHTML=renderStats();
+}
+
+// ═══ ORDERS ═══
+function renderOrders(){
+  const active=orders.filter(o=>!["delivered","cancelled","pending_payment"].includes(o.status));
+  const done=orders.filter(o=>["delivered","cancelled"].includes(o.status)).slice(0,10);
+
+  if(!active.length&&!done.length){
+    return`<div style="text-align:center;padding:60px 20px;color:var(--sub)">
+      <div style="font-size:48px;margin-bottom:12px">🌸</div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:6px">Henüz sipariş yok</div>
+      <div style="font-size:13px">Yeni siparişler burada görünecek</div>
+    </div>`;
+  }
+
+  let html="";
+  if(active.length){
+    html+=`<div style="font-size:14px;font-weight:700;margin-bottom:12px;color:var(--sub)">AKTİF SİPARİŞLER (${active.length})</div>`;
+    html+=active.map(o=>orderCard(o)).join("");
+  }
+  if(done.length){
+    html+=`<div style="font-size:14px;font-weight:700;margin:16px 0 12px;color:var(--sub)">TAMAMLANANLAR</div>`;
+    html+=done.map(o=>orderCard(o)).join("");
+  }
+  return html;
+}
+
+function orderCard(o){
+  const st=STATUS_MAP[o.status]||{l:o.status,c:""};
+  const d=o.created_at?new Date(o.created_at).toLocaleString("tr-TR",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"}):"";
+  const total=Math.round((o.total||0)/100);
+  const customer=o.customer||{};
+  const isNew=o.status==="pending";
+
+  // Yeni note formatını ayrıştır
+  const note=o.customer_note||"";
+  const hizMatch=note.match(/\[🌸 ÇİÇEK SİPARİŞİ • ([^\]]+)\]/);
+  const hizLabel=hizMatch?hizMatch[1]:"";
+  const dateMatch=note.match(/📅 Tarih: (\S+)/);
+  const timeMatch=note.match(/🕐 Saat: ([^\n]+)/);
+  const delivDate=dateMatch?dateMatch[1]:"";
+  const delivTime=timeMatch?timeMatch[1].trim():"";
+  const aliciMatch=note.match(/👤 ALICI: ([^—\n]+) — 📞 ([^\n]+)/);
+  const aliciAd=aliciMatch?aliciMatch[1].trim():"";
+  const aliciTel=aliciMatch?aliciMatch[2].trim():"";
+  const kendisiMatch=note.match(/👤 Kendisi için/);
+  const kartMatch=note.match(/🎴 Kart: ([^\n]+)/);
+  const kartTipi=kartMatch?kartMatch[1].trim():"";
+  const giftMatch=note.match(/💌 Hediye Notu:\s*\n?"?([^"\n]+)"?/);
+  const giftNote=giftMatch?giftMatch[1].trim():"";
+
+  // Geriye dönük uyumluluk (eski format)
+  const oldFormatMatch=note.match(/\[Çiçek Teslimatı • ([^\]]+)\]/);
+  const oldDelivTime=oldFormatMatch?oldFormatMatch[1]:"";
+  const oldGiftMatch=note.match(/💌 Hediye Notu: ([^\n]+)/);
+  const oldGiftNote=oldGiftMatch?oldGiftMatch[1]:"";
+
+  const finalDelivTime=(delivDate&&delivTime)?`${delivDate} ${delivTime}`:(oldDelivTime||"");
+  const finalGiftNote=giftNote||oldGiftNote;
+
+  // ACİL rengi
+  const isAcil=hizLabel.includes("ACİL");
+  const isYarin=hizLabel.includes("Yarın");
+
+  const items=(o.items||[]).map(i=>`
+    <div class="order-item">
+      <span>${prodEmoji(i.name||"")} ${i.name} x${i.quantity}</span>
+      <span style="font-weight:700;color:var(--pink)">${Math.round((i.total_price||0)/100)}₺</span>
+    </div>`).join("");
+
+  let actions="";
+  if(o.status==="pending") actions=`
+    <button class="act-btn act-confirm" onclick="updateStatus('${o.id}','confirmed')">✅ Onayla</button>
+    <button class="act-btn act-cancel" onclick="updateStatus('${o.id}','cancelled')">❌ İptal</button>`;
+  else if(o.status==="confirmed"||o.status==="sent_to_restaurant") actions=`
+    <button class="act-btn act-prepare" onclick="updateStatus('${o.id}','restaurant_preparing')">🌸 Hazırlamaya Başla</button>`;
+  else if(o.status==="restaurant_preparing") actions=`
+    <button class="act-btn act-ready" onclick="updateStatus('${o.id}','ready_for_courier')">📦 Hazır, Kurye Bekliyor</button>`;
+
+  return `<div class="order-card ${isNew?"new":""} ${isAcil?"acil":""}">
+    <div class="order-head">
+      <div>
+        <div class="order-num">🌸 #${o.order_number||o.id?.slice(0,8)}</div>
+        <div class="order-time">${d} · ${total}₺</div>
+      </div>
+      <span class="status-badge ${st.c}">${st.l}</span>
+    </div>
+
+    ${isAcil?`<div style="background:#FEE2E2;border:2px solid #E74C3C;border-radius:10px;padding:10px 14px;margin-bottom:10px;font-size:13px;font-weight:800;color:#991B1B;text-align:center">⚡ ACİL SİPARİŞ — 2 SAAT İÇİNDE</div>`:""}
+    ${isYarin&&!isAcil?`<div style="background:#FEF3C7;border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:12px;font-weight:700;color:#92400E">⏰ Yarın teslim edilecek</div>`:""}
+
+    ${finalDelivTime?`<div style="background:rgba(233,30,140,.1);border-radius:8px;padding:10px 12px;margin-bottom:10px;font-size:13px;color:var(--pink-dark);font-weight:700">🕐 Teslimat: ${finalDelivTime}</div>`:""}
+
+    ${kartTipi&&kartTipi!=="Standart"?`<div style="background:linear-gradient(135deg,#FCE4EC,#F8BBD9);border-radius:8px;padding:8px 12px;margin-bottom:10px;font-size:12px;color:var(--pink-dark);font-weight:700">🎴 ${kartTipi} kartı</div>`:""}
+
+    <div class="order-customer">
+      <span>👤 Sipariş: ${customer.full_name||"Müşteri"}</span>
+      ${customer.phone?`<a href="tel:${customer.phone}" style="color:var(--pink);text-decoration:none">📞 ${customer.phone}</a>`:""}
+    </div>
+
+    ${aliciAd?`<div style="background:#FFF5F9;border:1.5px dashed var(--pink);border-radius:10px;padding:10px 12px;margin-bottom:10px">
+      <div style="font-size:11px;font-weight:700;color:var(--pink-dark);margin-bottom:4px">🎁 TESLİM EDİLECEK KİŞİ</div>
+      <div style="font-size:14px;font-weight:800;color:var(--text)">${aliciAd}</div>
+      ${aliciTel?`<a href="tel:${aliciTel}" style="font-size:13px;color:var(--pink);text-decoration:none;font-weight:700">📞 ${aliciTel}</a>`:""}
+    </div>`:kendisiMatch?`<div style="font-size:11px;color:var(--sub);margin-bottom:8px;font-style:italic">💝 Kendisi için</div>`:""}
+
+    ${o.delivery_address?`<div style="background:#F9F9F9;border-radius:8px;padding:8px 12px;margin-bottom:8px;font-size:12px;color:var(--text)">📍 ${o.delivery_address}</div>`:""}
+
+    ${finalGiftNote?`<div class="order-gift-note">💌 "${finalGiftNote}"</div>`:""}
+
+    <div class="order-items">${items||"<div style='color:var(--sub);font-size:12px'>Ürün yok</div>"}</div>
+
+    ${actions?`<div class="order-actions">${actions}</div>`:""}
+  </div>`;
+}
+
+async function updateStatus(orderId, newStatus){
+  const res=await sRPC("update_order_status",{p_order_id:orderId,p_new_status:newStatus,p_cancel_reason:null});
+  if(res||res===null){
+    const o=orders.find(x=>x.id===orderId);
+    if(o)o.status=newStatus;
+    nf(newStatus==="cancelled"?"❌ İptal edildi":"✅ Güncellendi");
+    renderApp();
+  }else nf("❌ Hata");
+}
+
+// ═══ MENU ═══
+function renderMenu(){
+  return `<div class="add-menu-form">
+    <div style="font-size:14px;font-weight:700;margin-bottom:12px;color:var(--text)">➕ Yeni Ürün Ekle</div>
+    <div class="form-row">
+      <div><label style="font-size:11px;color:var(--sub);display:block;margin-bottom:4px">Ürün Adı *</label>
+      <input class="inp" id="miName" placeholder="Kırmızı Güller Buketi"></div>
+      <div><label style="font-size:11px;color:var(--sub);display:block;margin-bottom:4px">Fiyat (₺) *</label>
+      <input class="inp" id="miPrice" type="number" placeholder="250"></div>
+    </div>
+    <div class="form-row">
+      <div><label style="font-size:11px;color:var(--sub);display:block;margin-bottom:4px">Kategori</label>
+      <select class="inp" id="miCat">
+        <option value="Buket">💐 Buket</option>
+        <option value="Aranjman">🌺 Aranjman</option>
+        <option value="Saksı">🪴 Saksı Çiçek</option>
+        <option value="Kuru">🌾 Kuru Çiçek</option>
+        <option value="Hediye">🎁 Hediyelik</option>
+        <option value="Çelenk">🕊️ Çelenk / Cenaze</option>
+        <option value="Özel">✨ Özel Gün / Kampanya</option>
+      </select></div>
+      <div><label style="font-size:11px;color:var(--sub);display:block;margin-bottom:4px">Eski Fiyat (₺) — indirim için</label>
+      <input class="inp" id="miOldPrice" type="number" placeholder="300 (opsiyonel)"></div>
+    </div>
+    <div class="form-row">
+      <div class="inp-full"><label style="font-size:11px;color:var(--sub);display:block;margin-bottom:4px">Açıklama</label>
+      <input class="inp" id="miDesc" placeholder="12 adet kırmızı gül, yeşillik ve kurdela ile"></div>
+    </div>
+    <div class="form-row">
+      <div class="inp-full"><label style="font-size:11px;color:var(--sub);display:block;margin-bottom:4px">Görsel URL (isteğe bağlı) — müşteri sayfasında büyük görünür</label>
+      <input class="inp" id="miImg" placeholder="https://...jpg"></div>
+    </div>
+    <button class="btn-pink btn-sm" onclick="addMenuItem()">➕ Ekle</button>
+  </div>
+
+  <div style="font-size:14px;font-weight:700;margin-bottom:10px;color:var(--sub)">ÜRÜNLERİM (${menuItems.length})</div>
+  ${menuItems.length?menuItems.map(m=>{
+    const price=Math.round((m.price||0)/100);
+    const oldPrice=m.old_price?Math.round(m.old_price/100):null;
+    return `
+    <div class="menu-item-card">
+      ${m.image_url?`<img src="${m.image_url}" style="width:50px;height:50px;object-fit:cover;border-radius:8px;margin-right:10px" onerror="this.style.display='none'">`:""}
+      <div style="flex:1">
+        <div class="mi-name">${prodEmoji(m.name)} ${m.name}</div>
+        <div style="font-size:11px;color:var(--sub);margin-top:3px">${m.description||""}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <span class="mi-price">${oldPrice?`<span style="text-decoration:line-through;color:var(--sub);font-size:11px;font-weight:400;margin-right:4px">${oldPrice}₺</span>`:""}${price}₺</span>
+        <div class="mi-available" style="background:${m.is_available?"var(--green)":"var(--red)"}"></div>
+        <button onclick="toggleAvailable('${m.id}',${!m.is_available})" style="background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:6px 10px;color:var(--sub);font-size:11px;cursor:pointer">
+          ${m.is_available?"Pasif Et":"Aktif Et"}
+        </button>
+        <button onclick="deleteMenuItem('${m.id}')" style="background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:6px 10px;color:var(--red);font-size:11px;cursor:pointer">Sil</button>
+      </div>
+    </div>`;}).join("")
+  :`<div style="text-align:center;padding:40px;color:var(--sub);font-size:13px">Henüz ürün yok</div>`}`;
+}
+
+async function addMenuItem(){
+  const name=(document.getElementById("miName")?.value||"").trim();
+  const price=parseFloat(document.getElementById("miPrice")?.value||0);
+  const oldPrice=parseFloat(document.getElementById("miOldPrice")?.value||0);
+  const desc=(document.getElementById("miDesc")?.value||"").trim();
+  const img=(document.getElementById("miImg")?.value||"").trim();
+  const cat=document.getElementById("miCat")?.value||"Buket";
+
+  if(!name||!price){nf("❌ Ürün adı ve fiyat zorunlu");return}
+
+  // Kategoriyi açıklamaya ekle ki müşteri panelindeki filtre çalışsın
+  const fullDesc=cat+(desc?" - "+desc:"");
+
+  const body={
+    restaurant_id:currentRest.id,
+    name,
+    description:fullDesc,
+    price:Math.round(price*100),
+    image_url:img||null,
+    is_available:true
+  };
+  if(oldPrice&&oldPrice>price) body.old_price=Math.round(oldPrice*100);
+
+  const res=await sPost("menu_items",body);
+  if(res&&res.length){
+    menuItems.unshift(res[0]);
+    nf("✅ "+name+" eklendi");
+    document.getElementById("miName").value="";
+    document.getElementById("miPrice").value="";
+    document.getElementById("miOldPrice").value="";
+    document.getElementById("miDesc").value="";
+    document.getElementById("miImg").value="";
+    renderApp();
+  }else nf("❌ Eklenemedi");
+}
+
+async function toggleAvailable(id,val){
+  await sPatch("menu_items",id,{is_available:val});
+  const m=menuItems.find(x=>x.id===id);
+  if(m)m.is_available=val;
+  nf(val?"✅ Aktif":"⏸️ Pasif");
+  renderApp();
+}
+
+async function deleteMenuItem(id){
+  if(!confirm("Ürünü silmek istiyor musunuz?"))return;
+  await sDel("menu_items",id);
+  menuItems=menuItems.filter(x=>x.id!==id);
+  nf("🗑️ Silindi");
+  renderApp();
+}
+
+// ═══ STATS ═══
+function renderStats(){
+  const delivered=orders.filter(o=>o.status==="delivered");
+  const totalRev=delivered.reduce((s,o)=>s+Math.round((o.total||0)/100),0);
+  const today=new Date().toDateString();
+  const todayOrds=delivered.filter(o=>new Date(o.created_at).toDateString()===today);
+  const todayRev=todayOrds.reduce((s,o)=>s+Math.round((o.total||0)/100),0);
+
+  return `<div class="stats">
+    <div class="stat"><div class="stat-val">${todayOrds.length}</div><div class="stat-label">Bugün Sipariş</div></div>
+    <div class="stat"><div class="stat-val">${todayRev}₺</div><div class="stat-label">Bugün Ciro</div></div>
+    <div class="stat"><div class="stat-val">${menuItems.length}</div><div class="stat-label">Ürün Sayısı</div></div>
+  </div>
+
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:16px">
+    <div style="font-size:14px;font-weight:700;margin-bottom:12px">📊 Genel Özet</div>
+    <div style="font-size:13px;color:var(--sub);line-height:2">
+      <div>Toplam Sipariş: <span style="color:var(--text);font-weight:700">${orders.length}</span></div>
+      <div>Teslim Edilen: <span style="color:var(--green);font-weight:700">${delivered.length}</span></div>
+      <div>Toplam Ciro: <span style="color:var(--pink);font-weight:700">${totalRev}₺</span></div>
+      <div>Mevcut Durum: <span style="${currentRest?.is_open?"color:var(--green)":"color:var(--red)"};font-weight:700">${currentRest?.is_open?"🟢 Açık":"🔴 Kapalı"}</span></div>
+    </div>
+  </div>`;
+}
+
+function prodEmoji(name){
+  const n=(name||"").toLowerCase();
+  if(n.includes("gül"))return"🌹";if(n.includes("orkide"))return"🌸";
+  if(n.includes("lale"))return"🌷";if(n.includes("papatya"))return"🌼";
+  if(n.includes("ayçiçeği"))return"🌻";if(n.includes("saksı")||n.includes("sukulent"))return"🪴";
+  if(n.includes("kuru"))return"🌾";if(n.includes("hediye")||n.includes("kutu"))return"🎁";
+  if(n.includes("balon"))return"🎈";return"💐";
+}
+
+// ═══ TOGGLE OPEN ═══
+async function toggleOpen(){
+  if(!currentRest)return;
+  const newState=!currentRest.is_open;
+  const res=await sRPC("panel_update_restaurant_basic",{p_panel_user_id:panelUser.id,p_restaurant_id:currentRest.id,p_payload:{is_open:newState}});
+  if(res&&res.success){
+    currentRest.is_open=newState;
+    nf(newState?"🟢 Açıldı":"🔴 Kapatıldı");
+    renderApp();
+  }else{
+    // Fallback: direct patch
+    await sPatch("restaurants",currentRest.id,{is_open:newState});
+    currentRest.is_open=newState;
+    nf(newState?"🟢 Açıldı":"🔴 Kapatıldı");
+    renderApp();
+  }
+}
+
+// ═══ POLLING ═══
+function startPolling(){
+  if(pollingInterval)clearInterval(pollingInterval);
+  lastPendingCount=orders.filter(o=>o.status==="pending").length;
+  pollingInterval=setInterval(async()=>{
+    if(document.hidden)return;
+    await loadOrders();
+    const newPending=orders.filter(o=>o.status==="pending"&&!alarmDismissedIds.includes(o.id));
+    if(newPending.length>lastPendingCount){
+      // En yeni acil siparişi bul
+      const acilOrder=newPending.find(o=>(o.customer_note||"").includes("ACİL"));
+      newPending.forEach(o=>notifyNewOrder(o.id,(o.customer_note||"").includes("ACİL")));
+    }
+    lastPendingCount=orders.filter(o=>o.status==="pending").length;
+    renderApp();
+  },5000);
+}
+
+async function loadOrders(){
+  if(!currentRest)return;
+  const since24h=new Date(Date.now()-24*60*60*1000).toISOString();
+  const url="orders?select=*,items:order_items(*),customer:users!orders_customer_id_fkey(id,full_name,phone)&restaurant_id=eq."+currentRest.id+"&status=not.in.(pending_payment)&or=(status.not.in.(delivered%2Ccancelled%2Cpending_payment)%2Ccreated_at.gte."+encodeURIComponent(since24h)+")&order=created_at.desc&limit=100";
+  const data=await sg(url);
+  if(data&&Array.isArray(data))orders=data;
+}
+
+async function loadMenu(){
+  if(!currentRest)return;
+  const data=await sg("menu_items?restaurant_id=eq."+currentRest.id+"&order=name");
+  menuItems=data||[];
+}
+
+// ═══ LOGIN + REGISTER + FORGOT PASSWORD ═══
+function renderLogin(){
+  document.getElementById("appRoot").innerHTML=`
+    <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-family:system-ui;padding:24px;overflow:hidden">
+      <div style="position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&q=80') center/cover no-repeat;filter:brightness(.35)"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(233,30,140,.15) 0%,rgba(0,0,0,.75) 100%)"></div>
+      ${Array.from({length:10},(_,i)=>`<div style="position:absolute;font-size:${20+Math.random()*14}px;opacity:.12;left:${Math.random()*100}%;top:${Math.random()*100}%;animation:floatPetal ${6+Math.random()*4}s infinite ease-in-out;animation-delay:${Math.random()*3}s">${['🌸','🌹','🌺','🌷','💐','🌻'][i%6]}</div>`).join("")}
+      <style>@keyframes floatPetal{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-25px) rotate(15deg)}}</style>
+      <div style="position:relative;z-index:2;width:100%;max-width:400px">
+        <div style="text-align:center;margin-bottom:28px">
+          <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(233,30,140,.15);border:1px solid rgba(233,30,140,.3);border-radius:40px;padding:6px 16px;margin-bottom:16px"><span style="font-size:10px;font-weight:800;color:#F8BBD9;letter-spacing:2px;text-transform:uppercase">🌸 Çiçekçi Paneli</span></div>
+          <div style="font-size:38px;font-weight:900;color:#fff;letter-spacing:-1px;text-shadow:0 4px 30px rgba(233,30,140,.4)">Neffiss <span style="color:#F06292">Hediye</span></div>
+          <div style="font-size:13px;color:rgba(255,255,255,.55);margin-top:6px">Çiçek siparişlerinizi yönetin, büyüyün.</div>
+        </div>
+        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:28px;backdrop-filter:blur(16px)">
+          <div id="loginError" style="display:none;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#FCA5A5;font-size:12px;font-weight:600;padding:10px 14px;border-radius:12px;margin-bottom:16px"></div>
+          <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">E-Posta</label>
+          <input id="loginEmail" type="email" placeholder="cicekci@ornek.com" style="width:100%;padding:15px 16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.07);color:#fff;font-size:15px;margin-bottom:14px;box-sizing:border-box;outline:none;transition:all .25s" onfocus="this.style.borderColor='#E91E8C';this.style.background='rgba(233,30,140,.08)'" onblur="this.style.borderColor='rgba(255,255,255,.1)';this.style.background='rgba(255,255,255,.07)'" onkeydown="if(event.key==='Enter')document.getElementById('loginPw').focus()">
+          <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Şifre</label>
+          <input id="loginPw" type="password" placeholder="••••••••" style="width:100%;padding:15px 16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.07);color:#fff;font-size:15px;margin-bottom:20px;box-sizing:border-box;outline:none;transition:all .25s" onfocus="this.style.borderColor='#E91E8C';this.style.background='rgba(233,30,140,.08)'" onblur="this.style.borderColor='rgba(255,255,255,.1)';this.style.background='rgba(255,255,255,.07)'" onkeydown="if(event.key==='Enter')doLogin()">
+          <button onclick="doLogin()" id="loginBtn" style="width:100%;padding:17px;border-radius:14px;background:linear-gradient(135deg,#E91E8C,#F06292);border:none;color:#fff;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 8px 30px rgba(233,30,140,.35);transition:all .2s" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform=''">Giriş Yap →</button>
+          <div style="text-align:center;margin-top:16px"><button onclick="showRegister()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:13px;font-weight:500;cursor:pointer">Hesabınız yok mu? <span style="color:#F06292;font-weight:700">Kayıt ol</span></button></div>
+          <div style="text-align:center;margin-top:8px"><button onclick="showForgotPw()" style="background:none;border:none;color:rgba(255,255,255,.35);font-size:12px;cursor:pointer">Şifremi Unuttum</button></div>
+        </div>
+        <div style="display:flex;gap:20px;justify-content:center;margin-top:24px">
+          <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,.3)"><span>⚡</span> Hızlı Yönetim</div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,.3)"><span>🔔</span> Anlık Bildirim</div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,.3)"><span>🔒</span> Güvenli</div>
+        </div>
+      </div>
+    </div>`;
+  setTimeout(()=>document.getElementById("loginEmail")?.focus(),100);
+}
+
+function showRegister(){
+  document.getElementById("appRoot").innerHTML=`
+    <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-family:system-ui;padding:24px;overflow-y:auto">
+      <div style="position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&q=80') center/cover no-repeat;filter:brightness(.35)"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(34,197,94,.1) 0%,rgba(0,0,0,.75) 100%)"></div>
+      <div style="position:relative;z-index:2;width:100%;max-width:400px;padding:20px 0">
+        <div style="text-align:center;margin-bottom:24px">
+          <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);border-radius:40px;padding:6px 16px;margin-bottom:16px"><span style="font-size:10px;font-weight:800;color:#86EFAC;letter-spacing:2px;text-transform:uppercase">📝 Yeni Çiçekçi</span></div>
+          <div style="font-size:34px;font-weight:900;color:#fff">Neffiss <span style="color:#F06292">Hediye</span></div>
+          <div style="font-size:13px;color:rgba(255,255,255,.5);margin-top:4px">Çiçekçinizi platforma ekleyin</div>
+        </div>
+        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:26px;backdrop-filter:blur(16px)">
+          <div id="regError" style="display:none;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);color:#FCA5A5;font-size:12px;font-weight:600;padding:10px 14px;border-radius:12px;margin-bottom:16px"></div>
+          <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Ad Soyad</label>
+          <input id="regName" placeholder="Örn. Ahmet Yılmaz" style="width:100%;padding:14px 16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.07);color:#fff;font-size:15px;margin-bottom:12px;box-sizing:border-box;outline:none" onfocus="this.style.borderColor='#22C55E'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
+          <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">E-Posta</label>
+          <input id="regEmail" type="email" placeholder="ornek@cicekci.com" style="width:100%;padding:14px 16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.07);color:#fff;font-size:15px;margin-bottom:12px;box-sizing:border-box;outline:none" onfocus="this.style.borderColor='#22C55E'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
+          <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Telefon</label>
+          <input id="regPhone" type="tel" placeholder="05XX XXX XX XX" style="width:100%;padding:14px 16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.07);color:#fff;font-size:15px;margin-bottom:12px;box-sizing:border-box;outline:none" onfocus="this.style.borderColor='#22C55E'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
+          <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Şifre (en az 6 karakter)</label>
+          <input id="regPw" type="password" placeholder="••••••••" style="width:100%;padding:14px 16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.07);color:#fff;font-size:15px;margin-bottom:12px;box-sizing:border-box;outline:none" onfocus="this.style.borderColor='#22C55E'" onblur="this.style.borderColor='rgba(255,255,255,.1)'" onkeydown="if(event.key==='Enter')doRegister()">
+          <label style="display:flex;align-items:flex-start;gap:8px;padding:12px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;margin-bottom:14px;cursor:pointer">
+            <input type="checkbox" id="regTerms" style="width:18px;height:18px;accent-color:#22C55E;margin-top:2px;flex-shrink:0">
+            <span style="font-size:11px;color:rgba(255,255,255,.5);line-height:1.5">Çiçekçi İş Ortaklığı Sözleşmesi ve KVKK Aydınlatma Metni'ni okudum, kabul ediyorum.</span>
+          </label>
+          <button onclick="doRegister()" id="regBtn" style="width:100%;padding:17px;border-radius:14px;background:linear-gradient(135deg,#22C55E,#16A34A);border:none;color:#fff;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 8px 30px rgba(34,197,94,.3)">Hesap Oluştur →</button>
+          <div style="text-align:center;margin-top:16px"><button onclick="renderLogin()" style="background:none;border:none;color:rgba(255,255,255,.5);font-size:13px;cursor:pointer">Zaten hesabınız var mı? <span style="color:#F06292;font-weight:700">Giriş yap</span></button></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+let _resetEmail="",_resetCode="";
+function showForgotPw(){
+  document.getElementById("appRoot").innerHTML=`
+    <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-family:system-ui;padding:24px">
+      <div style="position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&q=80') center/cover no-repeat;filter:brightness(.35)"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(59,130,246,.15) 0%,rgba(0,0,0,.75) 100%)"></div>
+      <div style="position:relative;z-index:2;width:100%;max-width:400px">
+        <div style="text-align:center;margin-bottom:24px">
+          <div style="font-size:40px;margin-bottom:8px">🔑</div>
+          <div style="font-size:26px;font-weight:900;color:#fff">Şifre Sıfırlama</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.5);margin-top:6px">E-postanıza 6 haneli kod göndereceğiz</div>
+        </div>
+        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:26px;backdrop-filter:blur(16px)">
+          <div id="fpError" style="display:none;background:rgba(239,68,68,.15);color:#FCA5A5;font-size:12px;padding:10px 14px;border-radius:12px;margin-bottom:16px"></div>
+          <div id="fpSuccess" style="display:none;background:rgba(34,197,94,.15);color:#86EFAC;font-size:12px;padding:10px 14px;border-radius:12px;margin-bottom:16px"></div>
+          <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">E-Posta</label>
+          <input id="fpEmail" type="email" placeholder="ornek@cicekci.com" style="width:100%;padding:14px 16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.07);color:#fff;font-size:15px;margin-bottom:16px;box-sizing:border-box;outline:none" onkeydown="if(event.key==='Enter')sendResetCode()">
+          <button onclick="sendResetCode()" id="fpBtn" style="width:100%;padding:16px;border-radius:14px;background:linear-gradient(135deg,#3B82F6,#2563EB);border:none;color:#fff;font-size:15px;font-weight:800;cursor:pointer">Kod Gönder</button>
+          <div style="text-align:center;margin-top:16px"><button onclick="renderLogin()" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:13px;cursor:pointer">← Giriş sayfasına dön</button></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function sendResetCode(){
+  const email=(document.getElementById("fpEmail")?.value||"").trim().toLowerCase();
+  const err=document.getElementById("fpError"),suc=document.getElementById("fpSuccess"),btn=document.getElementById("fpBtn");
+  err.style.display="none";suc.style.display="none";
+  if(!email||!email.includes("@")){err.textContent="Geçerli e-posta girin.";err.style.display="block";return}
+  btn.disabled=true;btn.textContent="Gönderiliyor...";
+  const u=await sg("users?select=id,email&email=eq."+encodeURIComponent(email)+"&limit=1");
+  if(!u||!u.length){err.textContent="Bu e-posta kayıtlı değil.";err.style.display="block";btn.disabled=false;btn.textContent="Kod Gönder";return}
+  const code=String(Math.floor(100000+Math.random()*900000));
+  _resetEmail=email;_resetCode=code;
+  // Kod üretildi — gerçek SMS/email entegrasyonu için edge function lazım
+  // Şimdilik kodu kullanıcıya göster (admin demo için)
+  suc.textContent="✅ Kod: "+code+" (Canlıda e-postaya gönderilecek)";
+  suc.style.display="block";
+  setTimeout(()=>showResetForm(),1500);
+}
+
+function showResetForm(){
+  document.getElementById("appRoot").innerHTML=`
+    <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-family:system-ui;padding:24px">
+      <div style="position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&q=80') center/cover no-repeat;filter:brightness(.35)"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(59,130,246,.15) 0%,rgba(0,0,0,.75) 100%)"></div>
+      <div style="position:relative;z-index:2;width:100%;max-width:400px">
+        <div style="text-align:center;margin-bottom:24px">
+          <div style="font-size:40px;margin-bottom:8px">🔒</div>
+          <div style="font-size:26px;font-weight:900;color:#fff">Yeni Şifre</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.5);margin-top:6px">${_resetEmail} için 6 haneli kodu girin</div>
+        </div>
+        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:26px;backdrop-filter:blur(16px)">
+          <div id="rsError" style="display:none;background:rgba(239,68,68,.15);color:#FCA5A5;font-size:12px;padding:10px 14px;border-radius:12px;margin-bottom:16px"></div>
+          <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">6 Haneli Kod</label>
+          <input id="rsCode" type="text" maxlength="6" placeholder="••••••" style="width:100%;padding:14px 16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.07);color:#fff;font-size:22px;letter-spacing:8px;text-align:center;margin-bottom:12px;box-sizing:border-box;outline:none">
+          <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Yeni Şifre</label>
+          <input id="rsPw1" type="password" placeholder="••••••••" style="width:100%;padding:14px 16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.07);color:#fff;font-size:15px;margin-bottom:12px;box-sizing:border-box;outline:none">
+          <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Yeni Şifre (Tekrar)</label>
+          <input id="rsPw2" type="password" placeholder="••••••••" style="width:100%;padding:14px 16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.07);color:#fff;font-size:15px;margin-bottom:16px;box-sizing:border-box;outline:none">
+          <button onclick="doResetPw()" id="rsBtn" style="width:100%;padding:16px;border-radius:14px;background:linear-gradient(135deg,#3B82F6,#2563EB);border:none;color:#fff;font-size:15px;font-weight:800;cursor:pointer">Şifreyi Değiştir</button>
+          <div style="text-align:center;margin-top:16px"><button onclick="renderLogin()" style="background:none;border:none;color:rgba(255,255,255,.4);font-size:12px;cursor:pointer">← Giriş sayfasına dön</button></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function doResetPw(){
+  const code=(document.getElementById("rsCode")?.value||"").trim();
+  const pw1=document.getElementById("rsPw1")?.value||"";
+  const pw2=document.getElementById("rsPw2")?.value||"";
+  const err=document.getElementById("rsError"),btn=document.getElementById("rsBtn");
+  if(code.length!==6){err.textContent="6 haneli kodu girin.";err.style.display="block";return}
+  if(pw1.length<6){err.textContent="Şifre en az 6 karakter olmalı.";err.style.display="block";return}
+  if(pw1!==pw2){err.textContent="Şifreler eşleşmiyor.";err.style.display="block";return}
+  if(code!==_resetCode){err.textContent="Kod hatalı.";err.style.display="block";return}
+  btn.disabled=true;btn.textContent="İşleniyor...";
+  const res=await sRPC("verify_reset_and_update_password",{p_email:_resetEmail,p_code:code,p_new_password:pw1});
+  if(res&&res.success){
+    nf("✅ Şifreniz değiştirildi, giriş yapabilirsiniz");
+    setTimeout(()=>renderLogin(),1200);
+  }else{
+    err.textContent=(res&&res.error)||"İşlem başarısız.";err.style.display="block";
+    btn.disabled=false;btn.textContent="Şifreyi Değiştir";
+  }
+}
+
+async function doLogin(){
+  const email=(document.getElementById("loginEmail")?.value||"").trim().toLowerCase();
+  const pw=document.getElementById("loginPw")?.value||"";
+  const err=document.getElementById("loginError");
+  if(!email||!email.includes("@")){err.textContent="Geçerli e-posta girin.";err.style.display="block";return}
+  if(!pw){err.textContent="Şifre girin.";err.style.display="block";return}
+  err.style.display="none";
+  const btn=document.getElementById("loginBtn");btn.disabled=true;btn.textContent="Doğrulanıyor...";
+
+  const res=await sRPC("verify_panel_login",{p_email:email,p_password:pw});
+  if(res&&res.success&&(res.role==="owner"||res.role==="admin"||res.role==="restaurant_owner"||res.role==="staff")){
+    panelUser={id:res.user_id,name:res.name,email:res.email||email,phone:res.phone,role:res.role};
+    localStorage.setItem("nefiss_hediye_panel",JSON.stringify(panelUser));
+    await loadRestaurant();
+    return;
+  }
+  err.textContent=(res&&res.error)||"E-posta veya şifre hatalı.";err.style.display="block";
+  btn.disabled=false;btn.textContent="Giriş Yap →";
+}
+
+async function doRegister(){
+  const name=(document.getElementById("regName")?.value||"").trim();
+  const email=(document.getElementById("regEmail")?.value||"").trim().toLowerCase();
+  const phone=(document.getElementById("regPhone")?.value||"").trim();
+  const pw=document.getElementById("regPw")?.value||"";
+  const err=document.getElementById("regError");
+  if(!name){err.textContent="Ad soyad girin.";err.style.display="block";return}
+  if(!email||!email.includes("@")){err.textContent="Geçerli e-posta girin.";err.style.display="block";return}
+  if(!pw||pw.length<6){err.textContent="Şifre en az 6 karakter olmalı.";err.style.display="block";return}
+  if(!document.getElementById("regTerms")?.checked){err.textContent="Sözleşmeyi kabul etmelisiniz.";err.style.display="block";return}
+  err.style.display="none";
+  const btn=document.getElementById("regBtn");btn.disabled=true;btn.textContent="Kayıt yapılıyor...";
+  const res=await sRPC("register_panel_user",{p_name:name,p_email:email,p_phone:phone.replace(/\D/g,"")||"",p_password:pw,p_role:"owner"});
+  if(!res||!res.success){
+    err.textContent=(res&&res.error)||"Kayıt başarısız.";err.style.display="block";
+    btn.disabled=false;btn.textContent="Hesap Oluştur →";return;
+  }
+  panelUser={id:res.user_id,name:res.name,email:res.email||email,phone:res.phone||phone,role:"owner"};
+  localStorage.setItem("nefiss_hediye_panel",JSON.stringify(panelUser));
+  // Çiçekçi dükkanı oluşturma wizard'ına git
+  showShopWizard();
+}
+
+// ═══ ÇİÇEKÇİ DÜKKANI OLUŞTURMA WIZARD ═══
+function showShopWizard(){
+  document.getElementById("appRoot").innerHTML=`
+    <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-family:system-ui;padding:24px;overflow-y:auto">
+      <div style="position:absolute;inset:0;background:url('https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=1200&q=80') center/cover no-repeat;filter:brightness(.35)"></div>
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(233,30,140,.1) 0%,rgba(0,0,0,.75) 100%)"></div>
+      <div style="position:relative;z-index:2;width:100%;max-width:460px;padding:20px 0">
+        <div style="text-align:center;margin-bottom:24px">
+          <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(233,30,140,.15);border:1px solid rgba(233,30,140,.3);border-radius:40px;padding:6px 16px;margin-bottom:14px"><span style="font-size:10px;font-weight:800;color:#F8BBD9;letter-spacing:2px;text-transform:uppercase">🌸 Çiçekçi Bilgileri</span></div>
+          <div style="font-size:26px;font-weight:900;color:#fff">Hoşgeldin, ${panelUser.name.split(" ")[0]} 👋</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.55);margin-top:6px">Şimdi çiçekçi dükkanınızı oluşturalım</div>
+        </div>
+        <div style="background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:26px;backdrop-filter:blur(16px)">
+          <div id="wzError" style="display:none;background:rgba(239,68,68,.15);color:#FCA5A5;font-size:12px;padding:10px 14px;border-radius:12px;margin-bottom:14px"></div>
+          <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Çiçekçi Adı *</label>
+          <input id="wzName" placeholder="Örn. Neşoş Çiçekçilik" style="width:100%;padding:14px 16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.07);color:#fff;font-size:15px;margin-bottom:12px;box-sizing:border-box;outline:none" onfocus="this.style.borderColor='#E91E8C'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
+          <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Adres *</label>
+          <textarea id="wzAddr" rows="2" placeholder="Mahalle, cadde, no" style="width:100%;padding:14px 16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.07);color:#fff;font-size:14px;margin-bottom:12px;box-sizing:border-box;outline:none;resize:none;font-family:inherit" onfocus="this.style.borderColor='#E91E8C'" onblur="this.style.borderColor='rgba(255,255,255,.1)'"></textarea>
+          <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Dükkan Telefonu *</label>
+          <input id="wzPhone" type="tel" placeholder="0212 XXX XX XX" style="width:100%;padding:14px 16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.07);color:#fff;font-size:15px;margin-bottom:12px;box-sizing:border-box;outline:none" onfocus="this.style.borderColor='#E91E8C'" onblur="this.style.borderColor='rgba(255,255,255,.1)'">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+            <div>
+              <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Açılış</label>
+              <input id="wzOpen" type="time" value="09:00" style="width:100%;padding:14px 12px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.07);color:#fff;font-size:14px;box-sizing:border-box;outline:none">
+            </div>
+            <div>
+              <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Kapanış</label>
+              <input id="wzClose" type="time" value="21:00" style="width:100%;padding:14px 12px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.07);color:#fff;font-size:14px;box-sizing:border-box;outline:none">
+            </div>
+          </div>
+          <label style="font-size:10px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:6px">Açıklama</label>
+          <textarea id="wzDesc" rows="2" placeholder="Müşterilere nasıl hitap edeceksiniz? Özellikler..." style="width:100%;padding:14px 16px;border-radius:12px;border:1.5px solid rgba(255,255,255,.1);background:rgba(255,255,255,.07);color:#fff;font-size:14px;margin-bottom:16px;box-sizing:border-box;outline:none;resize:none;font-family:inherit" onfocus="this.style.borderColor='#E91E8C'" onblur="this.style.borderColor='rgba(255,255,255,.1)'"></textarea>
+          <button onclick="createShop()" id="wzBtn" style="width:100%;padding:17px;border-radius:14px;background:linear-gradient(135deg,#E91E8C,#F06292);border:none;color:#fff;font-size:16px;font-weight:800;cursor:pointer;box-shadow:0 8px 30px rgba(233,30,140,.35)">Çiçekçimi Oluştur →</button>
+          <div style="text-align:center;margin-top:12px"><button onclick="doLogout()" style="background:none;border:none;color:rgba(255,255,255,.35);font-size:12px;cursor:pointer">Çıkış yap</button></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+async function createShop(){
+  const name=(document.getElementById("wzName")?.value||"").trim();
+  const addr=(document.getElementById("wzAddr")?.value||"").trim();
+  const phone=(document.getElementById("wzPhone")?.value||"").trim();
+  const openT=document.getElementById("wzOpen")?.value||"09:00";
+  const closeT=document.getElementById("wzClose")?.value||"21:00";
+  const desc=(document.getElementById("wzDesc")?.value||"").trim();
+  const err=document.getElementById("wzError");
+  if(!name){err.textContent="Çiçekçi adı girin.";err.style.display="block";return}
+  if(!addr){err.textContent="Adres girin.";err.style.display="block";return}
+  if(!phone||phone.replace(/\D/g,"").length<10){err.textContent="Geçerli telefon girin.";err.style.display="block";return}
+  err.style.display="none";
+  const btn=document.getElementById("wzBtn");btn.disabled=true;btn.textContent="Oluşturuluyor...";
+
+  const slug="cicek-"+name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")+"-"+Math.random().toString(36).slice(2,8);
+  const body={
+    name,slug,
+    phone:phone.replace(/\D/g,""),
+    address:addr,
+    category:"Çiçek & Hediye",
+    description:desc||"Çiçek ve hediye teslimatı",
+    tags:["çiçek","buket","hediye"],
+    delivery_fee:0,
+    min_order:15000,
+    avg_prep_time:30,
+    commission:15,
+    is_active:false,  // ADMIN ONAYI BEKLİYOR
+    is_open:true,
+    is_ghost:false,   // Kendi kayıt olduğu için partner model
+    open_time:openT,
+    close_time:closeT,
+    real_name:name,
+    owner_id:panelUser.id
+  };
+  const res=await sPost("restaurants",body);
+  if(res&&res.length){
+    currentRest=res[0];
+    // Session'a kaydet
+    try{localStorage.setItem("nefiss_hediye_owner",JSON.stringify({id:panelUser.id,restId:currentRest.id,restName:name}))}catch(e){}
+    // Kullanıcıya "onay bekliyor" mesajı göster
+    showPendingScreen();
+  }else{
+    err.textContent="Oluşturulamadı. Tekrar deneyin.";err.style.display="block";
+    btn.disabled=false;btn.textContent="Çiçekçimi Oluştur →";
+  }
+}
+
+function showPendingScreen(){
+  document.getElementById("appRoot").innerHTML=`
+    <div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-family:system-ui;padding:24px">
+      <div style="position:absolute;inset:0;background:linear-gradient(135deg,#1a0a12 0%,#2d1520 100%)"></div>
+      <div style="position:relative;z-index:2;text-align:center;max-width:440px">
+        <div style="font-size:80px;margin-bottom:16px;animation:pulse 2s ease-in-out infinite">⏳</div>
+        <style>@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.1);opacity:.7}}</style>
+        <div style="font-size:28px;font-weight:900;color:#fff;margin-bottom:12px">Hesabınız Onay Bekliyor</div>
+        <div style="font-size:14px;color:rgba(255,255,255,.6);margin-bottom:24px;line-height:1.6">
+          Çiçekçi bilgileriniz kaydedildi. Neffiss ekibi en kısa sürede hesabınızı onaylayacak.<br><br>
+          <strong style="color:#F06292">${currentRest?.name||""}</strong> onaylandıktan sonra tekrar giriş yaparak sipariş almaya başlayabilirsiniz.
+        </div>
+        <div style="background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:16px;margin-bottom:20px;text-align:left">
+          <div style="font-size:12px;color:rgba(255,255,255,.5);margin-bottom:8px">📋 Sırada ne var?</div>
+          <div style="font-size:13px;color:rgba(255,255,255,.75);line-height:1.7">
+            1️⃣ Neffiss ekibi sizi arayacak<br>
+            2️⃣ Kısa bir telefon görüşmesi yapılacak<br>
+            3️⃣ Hesabınız aktif edilecek<br>
+            4️⃣ Menünüzü ekleyip sipariş almaya başlayacaksınız
+          </div>
+        </div>
+        <button onclick="doLogout()" style="padding:14px 32px;border-radius:12px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:#fff;font-size:14px;font-weight:700;cursor:pointer">Çıkış Yap</button>
+        <div style="font-size:12px;color:rgba(255,255,255,.35);margin-top:16px">İletişim: info@neffisshediye.com</div>
+      </div>
+    </div>`;
+}
+
+async function loadRestaurant(){
+  // Önce tüm çiçekçilerini çek (onaylı/onaysız fark etmez)
+  const allRests=await sg("restaurants?owner_id=eq."+panelUser.id+"&order=created_at.desc");
+  
+  if(!allRests||!allRests.length){
+    // Hiç çiçekçi kaydı yok → wizard'a yönlendir
+    showShopWizard();
+    return;
+  }
+  
+  // Aktif (onaylanmış) olan var mı?
+  const activeRest=allRests.find(r=>r.is_active===true);
+  
+  if(!activeRest){
+    // Kaydı var ama henüz onay beklemede
+    currentRest=allRests[0];
+    showPendingScreen();
+    return;
+  }
+  
+  currentRest=activeRest;
+  await Promise.all([loadOrders(),loadMenu()]);
+  renderApp();
+  startPolling();
+  // Ses bildirimi banner
+  if(localStorage.getItem("nefiss_hediye_audio")!=="1")showAudioBanner();
+  // Bildirim izni iste
+  if("Notification" in window&&Notification.permission==="default")Notification.requestPermission().catch(()=>{});
+}
+
+function doLogout(){
+  panelUser=null;currentRest=null;orders=[];menuItems=[];
+  localStorage.removeItem("nefiss_hediye_panel");
+  if(pollingInterval)clearInterval(pollingInterval);
+  renderLogin();
+}
+
+// ═══ INIT ═══
+async function init(){
+  const saved=localStorage.getItem("nefiss_hediye_panel");
+  if(saved){
+    try{
+      panelUser=JSON.parse(saved);
+      await loadRestaurant();
+    }catch{renderLogin()}
+  }else renderLogin();
+}
+
+init();
+</script>
+</body>
+</html>
